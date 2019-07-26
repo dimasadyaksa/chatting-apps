@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+  <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <style>
+            body{
+                background-color: #3b5998;
+                height:80vh
+            }
+            .m-container{
+                overflow-y:auto;
+            }
+
+            .mt-10{
+                margin-top:20vh;
+            }
+        </style>
+  </head>
+  <body >
+    <div class="card mt-10 w-25 h-25 mx-auto" id="reg-card" >
+        <form class="form mx-auto" id="register" action="">
+            <div class="row w-100 mt-3 mx-auto">
+                <input class="form-control w-100 mx-auto" id="nickname" placeholder="Nickname"/>
+            </div>
+            <div class="row w-100 mt-3 mx-auto">
+                <button class="btn btn-primary mb-2 w-100 btn-block mx-auto">OK</button>
+            </div>
+        </form>
+    </div>
+    <div class="card mt-5 w-25 h-100 mx-auto" id="chat-card" style="display:none">
+        <ul id="messages" class="h-100 list-group" style="overflow:auto;"></ul>
+        <form class="form-inline align-self-end mx-auto" id="chat" action="">
+            <div class="row">
+                <div class="col w-75">
+                    <input class="form-control" id="m" placeholder="Send Messages"/>
+                </div>
+                <div class="col w-25">
+                    <button class="btn btn-primary mb-2 btn-block">Send</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        $(function(){
+            var nickname = 'no name' //User nickname
+            var lastMsg = '#message' //Get the last message id  
+            var socket = io()        //Instantiate Socket.io
+
+            
+            $('#chat').submit(function(e){
+                e.preventDefault()   //Prevent Page to reload
+
+                socket.emit('chat message',JSON.stringify({name:nickname,messages:$('#m').val()}))  //Send message to server
+                /*
+                    Messages format 
+                    {
+                        name: nickname,
+                        messages: 
+                    }
+                */
+                $('#m').val('')
+                
+                return false
+            })
+
+            $('#register').submit(function(e){
+                e.preventDefault()
+                
+                nickname = $('#nickname').val()
+                console.log('register '+nickname)
+                $('#reg-card').hide()
+                $('#chat-card').show()
+            })  
+
+            socket.on('chat message',function(msg){
+                let data = JSON.parse(msg)
+                keepBottom()
+                const chat_obj = 
+                `<li class="list-group-item">
+                    <div class=${data['name']==nickname?"float-right":"float-left"}> 
+                        <h7><strong>${data['name']}</strong></h7>
+                        <br>
+                        <h7>${data['messages']}</h7>
+                    </div>
+                </li>`
+                $('#messages').append(chat_obj)
+                var list = $('li')
+                list[list.length-1].scrollIntoView()
+            })
+
+            function keepBottom(){
+                console.log('bott')
+                var container = $('#messages')
+                container.scrollTop = container.height 
+            }
+        })
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>

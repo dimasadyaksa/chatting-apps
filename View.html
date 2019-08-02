@@ -10,9 +10,13 @@
             .m-container{
                 overflow-y:auto;
             }
-
             .mt-10{
                 margin-top:20vh;
+            }
+            .hidden {
+                visibility: hidden;
+                opacity: 0;
+                transition: visibility 0s 2s, opacity 2s linear;
             }
         </style>
   </head>
@@ -28,6 +32,9 @@
         </form>
     </div>
     <div class="card mt-5 w-25 h-100 mx-auto" id="chat-card" style="display:none">
+        <div class="alert" id="notification">
+
+        </div>
         <ul id="messages" class="h-100 list-group" style="overflow:auto;"></ul>
         <form class="form-inline align-self-end mx-auto" id="chat" action="">
             <div class="row">
@@ -35,7 +42,7 @@
                     <input class="form-control" id="m" placeholder="Send Messages"/>
                 </div>
                 <div class="col w-25">
-                    <button class="btn btn-primary mb-2 btn-block">Send</button>
+                    <button class="btn btn-primary mb-2 btn-block" >Send</button>
                 </div>
             </div>
         </form>
@@ -52,17 +59,18 @@
             
             $('#chat').submit(function(e){
                 e.preventDefault()   //Prevent Page to reload
-
-                socket.emit('chat message',JSON.stringify({name:nickname,messages:$('#m').val()}))  //Send message to server
-                /*
-                    Messages format 
-                    {
-                        name: nickname,
-                        messages: 
-                    }
-                */
+                if($('#m').val().length!=0){
+                    /*
+                        Messages format 
+                        {
+                            name: nickname,
+                            messages: 
+                        }
+                    */
+                    socket.emit('chat message',JSON.stringify({name:nickname,messages:$('#m').val()}))  //Send message to server
+                }
+                    
                 $('#m').val('')
-                
                 return false
             })
 
@@ -71,6 +79,7 @@
                 
                 nickname = $('#nickname').val()
                 console.log('register '+nickname)
+                socket.emit('new user',nickname)
                 $('#reg-card').hide()
                 $('#chat-card').show()
             })  
@@ -81,7 +90,7 @@
                 const chat_obj = 
                 `<li class="list-group-item">
                     <div class=${data['name']==nickname?"float-right":"float-left"}> 
-                        <h7><strong>${data['name']}</strong></h7>
+                        <h7 class=${data['name']==nickname?"float-right":"float-left"}><strong>${data['name']}</strong></h7>
                         <br>
                         <h7>${data['messages']}</h7>
                     </div>
@@ -91,8 +100,20 @@
                 list[list.length-1].scrollIntoView()
             })
 
+            socket.on('new user',function(msg){
+                const notification = `
+                    <div class="alert alert-primary" id="notif-new" role="alert">
+                        ${msg} joined chat
+                    </div>
+                `
+                console.log(msg)
+                $('#notification').html(notification)
+                setTimeout(function(){
+                    $("#notification").html("")
+                },2000)
+            })
+
             function keepBottom(){
-                console.log('bott')
                 var container = $('#messages')
                 container.scrollTop = container.height 
             }

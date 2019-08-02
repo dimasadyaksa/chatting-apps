@@ -16,6 +16,9 @@ io.on('connection', function(socket){
     socket.on('chat message',function(msg){
         io.emit('chat message',msg)
     })
+    socket.on('new user',function(msg){
+        io.emit('new user',msg)
+    })
 })
 http.listen(port,function(){
     console.log('listen on port : '+port)

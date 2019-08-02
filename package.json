@@ -1,0 +1,27 @@
+{
+  "name": "chatting-apps",
+  "version": "1.0.0",
+  "description": "",
+  "main": "App.js",
+  "scripts": {
+    "start": "nodemon App.js",
+    "prod": "pm2-runtime App.js",
+    "test": "mocha test/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dimasadyaksa/chatting-apps.git"
+  },
+  "author": "Dimas Adyaksa",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dimasadyaksa/chatting-apps/issues"
+  },
+  "homepage": "https://github.com/dimasadyaksa/chatting-apps#readme",
+  "dependencies": {
+    "mocha": "^6.1.4",
+    "express": "3.x",
+    "nodemon": "^1.19.1",
+    "pm2": "^3.5.1"
+  }
+}

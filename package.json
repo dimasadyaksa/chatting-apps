@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/dimasadyaksa/chatting-apps#readme",
   "dependencies": {
-    "express": "3.x",
+    "express": "^4.17.1",
     "mocha": "^6.1.4",
     "nodemon": "^1.19.1",
     "pm2": "^3.5.1",
